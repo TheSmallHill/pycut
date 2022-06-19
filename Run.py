@@ -14,11 +14,11 @@ if __name__ == '__main__':
 
     # Setup the logger object that this tool will output to. We convert the string version of the level into an integer for
     # use with the configuration method.
-    numericLevel = getattr(logging, args.log_level.upper(), None)
-    if not isinstance(numericLevel, int):
+    numeric_level = getattr(logging, args.log_level.upper(), None)
+    if not isinstance(numeric_level, int):
         raise ValueError('Invalid log level: %s' % args.log_level)
 
-    logging.basicConfig(filename=args.log_file, encoding='UTF-8', level=numericLevel)
+    logging.basicConfig(filename=args.log_file, encoding='UTF-8', level=numeric_level)
 
     logging.info('Initialized logger')
 

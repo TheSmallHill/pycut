@@ -1,7 +1,9 @@
 #!/usr/bin/python
 
 class Manager:
-    availableSolvers = []
+    __availableSolvers = []
+    __config = None
+    __configuredSolvers = []
 
     def __init__(self):
         # @todo implement
