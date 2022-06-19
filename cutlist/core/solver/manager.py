@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-class SolverManager:
+class Manager:
     availableSolvers = []
 
     def __init__(self):
