@@ -1,12 +1,18 @@
-tool:
-  output-directory: output/
-  solver:
-  unit: in
+cuts:
+  - length: 12
+    width: 24
+    quantity: 4
+    cut-from: pine-plywood
+input-directory: input/
+output-directory: output/
+solver:
 stock:
-  pine-plywood:
-    nominal length: 96
-    nominal width: 48
-    nominal thickness: 0.75
+  - name: pine-plywood
     actual length: 96
     actual width: 48
     actual thickness: 0.703
+    nominal length: 96
+    nominal width: 48
+    nominal thickness: 0.75
+    quantity: 2
+unit: in

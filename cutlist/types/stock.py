@@ -19,7 +19,8 @@ class Stock:
     dimension_unit = Unit.INCHES
     grain_direction_along_length = True
 
-    def __init__(self, n_width, n_length, n_thickness, a_width, a_length, a_thickness, quantity, material_id, dim_unit=None, grain_direction_along_length=True):
+    def __init__(self, n_width, n_length, n_thickness, a_width, a_length, a_thickness, material_id, quantity=1,
+                 dim_unit=None, grain_direction_along_length=True):
         # Handling for required inputs
         if n_width <= 0:
             raise ValueError('Nominal width cannot be less than or equal to zero')

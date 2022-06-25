@@ -1,8 +1,9 @@
 #!/usr/bin/python
 
 import logging
-import os
 from ..types.unit import Unit
+from ..types.stock import Stock
+from ..util import *
 import yaml as pkg_yaml
 
 
@@ -10,6 +11,10 @@ class ToolConfig:
     # Some default values that are just kept internally
     __input_directory_name = 'inputs'
     __output_directory_name = 'outputs'
+
+    available_stock = []
+    kerf = 0.125
+    cuts = []
 
     # The base input directory that should be searched for child configuration data and other input files
     base_input_directory_absolute = os.path.join(os.getcwd(), __input_directory_name)
@@ -20,7 +25,7 @@ class ToolConfig:
     # Unit that dimensions are given in
     dimension_unit = Unit.INCHES
 
-    solver_configs = []
+    solver_configs = {}
 
     __config_files = []
     __current_config = None
@@ -36,8 +41,41 @@ class ToolConfig:
         self.append_config(config_files)
 
     def process_config(self):
-        # @todo Do processing here to set class members
-        pass
+        if self.__current_config['unit'] is not None:
+            # @todo convert the specified unit into the enumeration
+            pass
+
+        if self.__current_config['input-directory'] is not None:
+            self.__input_directory_name = self.__current_config['input-directory']
+            self.base_input_directory_absolute = make_relative_path_absolute(self.__input_directory_name)
+
+        if self.__current_config['output-directory'] is not None:
+            self.__output_directory_name = self.__current_config['output-directory']
+            self.base_output_directory_absolute = make_relative_path_absolute(self.__output_directory_name)
+
+        if self.__current_config['kerf'] is not None:
+            self.kerf = self.__current_config['kerf']
+
+        for solver in self.__current_config['solver']:
+            new_solver = SolverConfig(solver)
+
+            self.solver_configs[new_solver.name] = new_solver
+
+        for stock in self.__current_config['stock']:
+            has_all_nominal = stock['nominal-width'] is not None and stock['nominal-length'] is not None and \
+                stock['nominal-thickness'] is not None
+            has_all_actual = stock['actual-width'] is not None and stock['actual-length'] is not None and \
+                stock['name'] is not None
+
+            if not has_all_nominal or not has_all_actual:
+                raise ValueError("Missing required data for available stock element")
+
+            new_stock = Stock(stock['nominal-width'], stock['nominal-length'], stock['nominal-thickness'], \
+                              stock['actual-width'], stock['actual-length'], stock['actual-thickness'], stock['name'])
+
+        for cut in self.__current_config['cuts']:
+            # @todo get each sub item and use it to create a cut object
+            pass
 
     def append_config(self, config_files):
         self.__config_files.append(config_files)
@@ -57,21 +95,7 @@ class ToolConfig:
 
 
 class SolverConfig:
-    # Directory that any output files should be placed in.
-    output_directory_relative = None
-    output_directory_absolute = None
-
-    # How should the outputs be represented?
-    output_file_types = []
-
-    # Array of available stock to use for cutting
-    input_stock = []
-
-    # Kerf of the blade being used to make the cuts. Provided in the configured units for the tool
-    kerf = 0.125
-
-    # The sizes of the outputs that the cuts and layout are being optimized to create
-    input_cut_dimensions = []
+    name = "Default"
 
     # What the cuts should be optimized for (reduced waste, area of waste, speed of calculation, etc.)
     # Use of this is TBD and I just think it could be a nice thing to be able to specify, may end up just going away...
@@ -81,9 +105,16 @@ class SolverConfig:
     # variables and this is kept as the original data.
     __current_config = None
 
-    def __init__(self, config_file):
-        # @todo
-        pass
+    def __init__(self, config):
+        if config['name'] is not None:
+            self.__current_config = config
 
-    def append_config_file(self, config_file):
-        pass
+            self.process_config(self.__current_config)
+        else:
+            raise ValueError("A solver configuration must include a name")
+
+    def append_config_file(self, config):
+        self.__current_config.update(config)
+
+    def process_config(self, config):
+        self.name = self.__current_config['name']
