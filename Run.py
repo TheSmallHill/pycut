@@ -1,6 +1,8 @@
 #!/usr/bin/python
 
 import argparse
+from cutlist.core import controller
+from cutlist.input_manager import config
 import logging
 
 if __name__ == '__main__':
@@ -18,7 +20,11 @@ if __name__ == '__main__':
     if not isinstance(numeric_level, int):
         raise ValueError('Invalid log level: %s' % args.log_level)
 
-    logging.basicConfig(filename=args.log_file, encoding='UTF-8', level=numeric_level)
+    logging.basicConfig(filename=args.log_file, level=numeric_level)
 
     logging.info('Initialized logger')
 
+    tool_config_data = config.ToolConfig(args.config)
+
+    # Start the tool
+    tool_controller = controller.Controller(tool_config_data)

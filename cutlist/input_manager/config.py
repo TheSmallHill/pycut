@@ -35,7 +35,7 @@ class ToolConfig:
 
         self.append_config(config_files)
 
-    def process_configs(self):
+    def process_config(self):
         # @todo Do processing here to set class members
         pass
 
@@ -47,7 +47,10 @@ class ToolConfig:
             with open(config_file) as cf:
                 partial_config_data = pkg_yaml.safe_load(cf)
 
-            self.__current_config.update(partial_config_data)
+                if self.__current_config is None:
+                    self.__current_config = partial_config_data
+                else:
+                    self.__current_config.update(partial_config_data)
 
         # reprocess
         self.process_config()

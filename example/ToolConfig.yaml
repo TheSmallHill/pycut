@@ -1,0 +1,12 @@
+tool:
+  output-directory: output/
+  solver:
+  unit: in
+stock:
+  pine-plywood:
+    nominal length: 96
+    nominal width: 48
+    nominal thickness: 0.75
+    actual length: 96
+    actual width: 48
+    actual thickness: 0.703
