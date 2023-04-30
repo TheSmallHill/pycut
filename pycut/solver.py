@@ -1,38 +1,29 @@
-from pycut.types import sheetstocktype
+from pycut.types import sheettype
 from typing import Self
 
-CutPieceType = sheetstocktype.SheetStockType
-SheetStockType = sheetstocktype.SheetStockType
+SheetType = sheettype.SheetType
 
 class Solver:
-    __stockSheets = []
+    __stockSheetsSize = None
+    __numStockSheets = 0
+
     __cutPieces = []
     __algo = None # @TODO fill this in with some default
 
-    def AddStockSheets(self: Self, sheet: SheetStockType | list) -> None:        
-        self.__AddToIoList("__stockSheets", sheet)
+    def AddStockSheets(self: Self, sheet: SheetType, numSheets: int) -> None:        
+        self.__stockSheetsSize = sheet
+        self.__numStockSheets = numSheets
 
     def ClearStockSheets(self: Self) -> None:
-        self.__stockSheets.clear()
+        self.AddStockSheets(None, 0)
 
-    def AddCutPieces(self: Self, piece: CutPieceType | list) -> None:
-        self.__AddToIoList("__cutPieces", piece)
-        
-    def ClearCutPieces(self: Self) -> None:
-        self.__cutPieces.clear()
-
-    def __AddToIoList(self: Self, ioListName: str, values: sheetstocktype.SheetStockType | list) -> None:
-        if not isinstance(ioListName, str):
-            raise TypeError("ioListName must be a string")
-        
-        ioList = getattr(self, ioListName)
-
+    def AddCutPieces(self: Self, piece: SheetType | list) -> None:
         shouldRaise = False
-        if isinstance(values, sheetstocktype.SheetStockType):
-            ioList.append(values)
-        elif isinstance(values, list):
-            if all(isinstance(x, sheetstocktype.SheetStockType) for x in values):
-                ioList.extend(values)
+        if isinstance(piece, sheettype.SheetStockType):
+            self.__cutPieces.append(piece)
+        elif isinstance(piece, list):
+            if all(isinstance(x, sheettype.SheetStockType) for x in piece):
+                self.__cutPieces.extend(piece)
             else:
                 shouldRaise = True
         else:
@@ -40,3 +31,6 @@ class Solver:
 
         if shouldRaise:
             raise TypeError("Input/Output data must be provided as pycut.types.sheetstocktype.SheetStockType type")
+        
+    def ClearCutPieces(self: Self) -> None:
+        self.__cutPieces.clear()
